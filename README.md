@@ -1,5 +1,7 @@
 # date
 
+# 0.19 justinmimbs/date ported to 0.18 for upgrading purposes
+
 This Elm package provides a simple `Date` type for working with dates without times or zones.
 
 

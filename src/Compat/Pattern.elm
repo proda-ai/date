@@ -1,7 +1,12 @@
-module Pattern exposing (Pattern, Token(..), fromString)
+module Compat.Pattern exposing (Pattern, Token(..), fromString)
 
 import Char
-import Parser exposing ((|.), (|=), Parser)
+import Compat.Parser as Parser exposing ((|.), (|=), Parser)
+
+
+isAlpha : Char -> Bool
+isAlpha c =
+    Char.isUpper c || Char.isLower c || Char.isDigit c
 
 
 
@@ -29,7 +34,7 @@ fromString str =
 
 field : Parser Token
 field =
-    Parser.chompIf Char.isAlpha
+    Parser.chompIf isAlpha
         |> Parser.getChompedString
         |> Parser.andThen fieldRepeats
 
@@ -64,7 +69,7 @@ literal =
 
 isLiteralChar : Char -> Bool
 isLiteralChar char =
-    char /= '\'' && not (Char.isAlpha char)
+    char /= '\'' && not (isAlpha char)
 
 
 quoted : Parser Token

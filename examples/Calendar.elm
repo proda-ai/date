@@ -1,17 +1,16 @@
 module Calendar exposing (main)
 
-import Browser
-import Date exposing (Date, Interval(..), Unit(..))
+import Compat.Date as Date exposing (Date, Interval(..), Unit(..))
+import Compat.Time as Time exposing (Month(..))
 import Html exposing (Html)
-import Html.Attributes
+import Html.Attributes exposing (style)
 import Task exposing (Task)
-import Time exposing (Month(..))
 
 
-main : Program () Model Msg
+main : Program Never Model Msg
 main =
-    Browser.document
-        { init = always init
+    Html.program
+        { init = init
         , view = view
         , update = update
         , subscriptions = always Sub.none
@@ -39,6 +38,10 @@ init =
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update (ReceiveDate today) _ =
+    let
+        _ =
+            Debug.log "today?" today
+    in
     ( today
     , Cmd.none
     )
@@ -74,24 +77,25 @@ groupsOf n list =
 -- view
 
 
-view : Model -> Browser.Document Msg
+view : Model -> Html Msg
 view date =
-    Browser.Document
-        "Calendar"
-        [ Html.div
-            [ Html.Attributes.style "padding" "2em"
-            , Html.Attributes.style "font-family" "Helvetica, Arial, san-serif"
-            , Html.Attributes.style "font-size" "16px"
+    Html.div
+        [ style
+            [ ( "padding", "2em" )
+            , ( "font-family", "Helvetica, Arial, san-serif" )
+            , ( "font-size", "16px" )
             ]
-            [ Html.h2
-                [ Html.Attributes.style "font-size" "16px"
-                , Html.Attributes.style "margin" "0"
-                , Html.Attributes.style "padding" "0 0.5em 2em"
+        ]
+        [ Html.h2
+            [ style
+                [ ( "font-size", "16px" )
+                , ( "margin", "0" )
+                , ( "padding", "0 0.5em 2em" )
                 ]
-                [ Html.text (date |> Date.format "MMMM yyyy")
-                ]
-            , viewMonthTable date
             ]
+            [ Html.text (date |> Date.format "MMMM yyyy")
+            ]
+        , viewMonthTable date
         ]
 
 
@@ -105,10 +109,12 @@ weekdayHeader =
                 |> List.map
                     (\str ->
                         Html.th
-                            [ Html.Attributes.style "padding" "0.5em"
-                            , Html.Attributes.style "font-weight" "normal"
-                            , Html.Attributes.style "font-style" "italic"
-                            , Html.Attributes.style "color" "gray"
+                            [ style
+                                [ ( "padding", "0.5em" )
+                                , ( "font-weight", "normal" )
+                                , ( "font-style", "italic" )
+                                , ( "color", "gray" )
+                                ]
                             ]
                             [ Html.text str
                             ]
@@ -125,8 +131,10 @@ viewMonthTable target =
                 |> groupsOf 7
     in
     Html.table
-        [ Html.Attributes.style "border-collapse" "collapse"
-        , Html.Attributes.style "text-align" "right"
+        [ style
+            [ ( "border-collapse", "collapse" )
+            , ( "text-align", "right" )
+            ]
         ]
         [ weekdayHeader
         , Html.tbody
@@ -155,11 +163,13 @@ viewMonthTable target =
                                                     "transparent"
                                         in
                                         Html.td
-                                            [ Html.Attributes.style "padding" "0.5em"
-                                            , Html.Attributes.style "background" background
-                                            , Html.Attributes.style "color" color
+                                            [ style
+                                                [ ( "padding", "0.5em" )
+                                                , ( "background", background )
+                                                , ( "color", color )
+                                                ]
                                             ]
-                                            [ Html.text (Date.day date |> String.fromInt)
+                                            [ Html.text (Date.day date |> toString)
                                             ]
                                     )
                             )

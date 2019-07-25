@@ -1,4 +1,4 @@
-module Date exposing
+module Compat.Date exposing
     ( Date
     , Month, Weekday
     , today, fromPosix, fromCalendarDate, fromWeekDate, fromOrdinalDate, fromIsoString, fromRataDie
@@ -71,10 +71,12 @@ module Date exposing
 
 -}
 
-import Parser exposing ((|.), (|=), Parser)
-import Pattern exposing (Token(..))
+import Char
+import Compat.Parser as Parser exposing ((|.), (|=), Parser)
+import Compat.Pattern as Pattern exposing (Token(..))
+import Compat.Time as Time exposing (Month(..), Posix, Weekday(..))
+import Compat.Util as String exposing (modBy)
 import Task exposing (Task)
-import Time exposing (Month(..), Posix, Weekday(..))
 
 
 {-| The `Month` type used in this package is an alias of [`Month`][timemonth]
@@ -964,7 +966,7 @@ fromYearAndDayOfYear ( y, doy ) =
 
 parser : Parser Date
 parser =
-    Parser.succeed Tuple.pair
+    Parser.succeed (,)
         |= int4
         |= dayOfYear
         |> Parser.andThen
@@ -1038,7 +1040,7 @@ int4 =
         |. Parser.chompIf Char.isDigit
         |. Parser.chompIf Char.isDigit
         |> Parser.mapChompedString
-            (\str _ -> String.toInt str |> Maybe.withDefault 0)
+            (\str _ -> String.toInt str |> Result.withDefault 0)
 
 
 int3 : Parser Int
@@ -1048,7 +1050,7 @@ int3 =
         |. Parser.chompIf Char.isDigit
         |. Parser.chompIf Char.isDigit
         |> Parser.mapChompedString
-            (\str _ -> String.toInt str |> Maybe.withDefault 0)
+            (\str _ -> String.toInt str |> Result.withDefault 0)
 
 
 int2 : Parser Int
@@ -1057,14 +1059,14 @@ int2 =
         |. Parser.chompIf Char.isDigit
         |. Parser.chompIf Char.isDigit
         |> Parser.mapChompedString
-            (\str _ -> String.toInt str |> Maybe.withDefault 0)
+            (\str _ -> String.toInt str |> Result.withDefault 0)
 
 
 int1 : Parser Int
 int1 =
     Parser.chompIf Char.isDigit
         |> Parser.mapChompedString
-            (\str _ -> String.toInt str |> Maybe.withDefault 0)
+            (\str _ -> String.toInt str |> Result.withDefault 0)
 
 
 
